@@ -66,7 +66,7 @@ void deleteList(List* list) {
 
 void push(List* list, void* valuePtr) {
     //save  current index
-    int currIndex = list->index;
+    //int currIndex = list->index;
 
     //goto last item
     while (hasNext(list)) {
@@ -95,6 +95,11 @@ void* pop(List* list) {
     //save  current index
     int currIndex = list->index;
 
+	//check if list contains any elements
+	if (list->size < 1) {
+		return NULL;
+	}
+
     //goto last item
     while (hasNext(list)) {
         gotoNext(list);
@@ -109,7 +114,7 @@ void* pop(List* list) {
     free(list->currItem);
     list->size--;
 
-    //go back if necessary
+    //go back
     list->currItem = previous;
     list->index--;
 
@@ -117,6 +122,13 @@ void* pop(List* list) {
 }
 
 void pushAtIndex(List* list, int index, void* value) {
+	//check element would get appended
+	if (index == list->size) {
+		//push element
+		push(list, value);
+		return;
+	}
+
     //goto requested index
     gotoIndex(list, index);
 
@@ -140,6 +152,18 @@ void pushAtIndex(List* list, int index, void* value) {
 }
 
 void* popAtIndex(List* list, int index) {
+	//check if list contains any elements
+	if (list->size < 1) {
+		return NULL;
+	}
+
+	//check if given index is valid
+	if (index < 0 || index >= list->size) {
+		errno = 1;
+		perror("ListOutOfBoundsException in 'popAtIndex'");
+		abort();
+	}
+
     if (index + 1 < list->size) { //item to be removed is not last
         //goto requested index
         gotoIndex(list, index);
